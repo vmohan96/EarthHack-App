@@ -6,6 +6,7 @@ model = AutoModelForCausalLM.from_pretrained(model_name)
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
+
 def generate_response(problem_input, max_length=300, num_return_sequences=1):
     # Tokenize and encode the prompt
     prompt = f"Propose a solution for this problem: {problem_input}"
@@ -20,10 +21,13 @@ def generate_response(problem_input, max_length=300, num_return_sequences=1):
     # Generate response
     output_ids = model.generate(input_ids, max_length=max_length, num_return_sequences=num_return_sequences, no_repeat_ngram_size=2)
 
-    # Decode and return the generated response
-    generated_response = tokenizer.decode(output_ids[0], skip_special_tokens=True)
+    # Decode and return the generated response (excluding the prompt)
+    generated_response = tokenizer.decode(output_ids[0, input_ids.shape[-1]:], skip_special_tokens=True)
     
     return generated_response
+
+
+
 
 
 # Usage
